@@ -17,7 +17,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static GitLabMiner.proyectoAISS.utilsPagination.UtilPag.getNextPageUrl;
-import static GitLabMiner.proyectoAISS.utilsPagination.UtilPag.getResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -94,6 +93,17 @@ public class IssueService {
 
         }
         return issues;
+    }
+    public  ResponseEntity<Issue[]> getResponseEntity(String uri, Class<Issue[]> clase) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("PRIVATE-TOKEN", token);
+
+        HttpEntity<Issue[]> request = new HttpEntity<>(null,headers);
+
+        return restTemplate.exchange(uri,
+                HttpMethod.GET,
+                request,
+                clase);
     }
 
 

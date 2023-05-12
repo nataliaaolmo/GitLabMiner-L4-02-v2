@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static GitLabMiner.proyectoAISS.utilsPagination.UtilPag.getNextPageUrl;
-import static GitLabMiner.proyectoAISS.utilsPagination.UtilPag.getResponseEntity;
 
 @Service
 public class CommitService {
@@ -26,7 +25,7 @@ public class CommitService {
     RestTemplate restTemplate;
 
     @Value("${gitlab-miner.token}")
-    private String token;
+    private static String token;
 
     public List<Commit> findCommits(String id){
 
@@ -61,7 +60,7 @@ public class CommitService {
             finalUri += "?since=" + LocalDateTime.now().minusDays(5);
         }
 
-        ResponseEntity<Commit[]> response = getResponseEntity(finalUri, Commit[].class);
+        ResponseEntity<Commit[]> response = getResponseEntityCommits(finalUri, Commit[].class);
         //paginamos commits
         List<Commit> pageCommits = Arrays.stream(response.getBody()).toList();
         commits.addAll(pageCommits);
@@ -78,7 +77,7 @@ public class CommitService {
 
         int page = 2;
         while (nextPageURL != null && page <= defaultPages) {
-            response = getResponseEntity(nextPageURL,Commit[].class);
+            response = getResponseEntityCommits(nextPageURL,Commit[].class);
             pageCommits = Arrays.stream(response.getBody()).toList();
             commits.addAll(pageCommits);
 
@@ -88,6 +87,18 @@ public class CommitService {
         }
         return commits;
 
+    }
+
+    public  ResponseEntity<Commit[]> getResponseEntityCommits(String uri, Class<Commit[]> clase) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("PRIVATE-TOKEN", token);
+
+        HttpEntity<Commit[]> request = new HttpEntity<>(null,headers);
+
+        return restTemplate.exchange(uri,
+                HttpMethod.GET,
+                request,
+                clase);
     }
 
 }

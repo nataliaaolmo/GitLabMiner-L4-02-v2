@@ -11,25 +11,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 public class UtilPag {
-//TODO: he puesto que todo esto es static, comprobar is funciona si no quito las proiedades de que sean static y
-    //y pongo el metodo getResponseEntity en cada uno de los service
     @Autowired
     static
     RestTemplate restTemplate;
 
     @Value("${gitlab-miner.token}")
     private static String token;
-    public static  <T1> ResponseEntity<T1[]> getResponseEntity(String uri, Class<T1[]> clase) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("PRIVATE-TOKEN", token);
-
-        HttpEntity<T1[]> request = new HttpEntity<>(null,headers);
-
-        return restTemplate.exchange(uri,
-                HttpMethod.GET,
-                request,
-                clase);
-    }
 
     public static String getNextPageUrl(HttpHeaders headers) {
         String result = null;

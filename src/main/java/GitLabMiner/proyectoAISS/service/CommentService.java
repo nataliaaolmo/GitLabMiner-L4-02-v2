@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static GitLabMiner.proyectoAISS.utilsPagination.UtilPag.getNextPageUrl;
-import static GitLabMiner.proyectoAISS.utilsPagination.UtilPag.getResponseEntity;
 
 @Service
 public class CommentService {
@@ -79,6 +78,18 @@ public class CommentService {
         }
 
         return comments;
+    }
+
+    public  ResponseEntity<Comment[]> getResponseEntity(String uri, Class<Comment[]> clase) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("PRIVATE-TOKEN", token);
+
+        HttpEntity<Comment[]> request = new HttpEntity<>(null,headers);
+
+        return restTemplate.exchange(uri,
+                HttpMethod.GET,
+                request,
+                clase);
     }
 
 }
