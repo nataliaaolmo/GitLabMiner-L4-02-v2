@@ -6,13 +6,19 @@ import GitLabMiner.proyectoAISS.service.CommentService;
 import GitLabMiner.proyectoAISS.service.CommitService;
 import GitLabMiner.proyectoAISS.service.IssueService;
 import GitLabMiner.proyectoAISS.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import java.util.List;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-
+@Tag(name="GitLab Project", description="GitLabMiner OpenAPI")
 @RestController
 @RequestMapping("/gitlab")
 public class ProjectController {
@@ -26,14 +32,22 @@ public class ProjectController {
     CommentService commentService;
     @Autowired
     RestTemplate restTemplate;
+    @Operation(summary= "Retrieve project",
+            description= "Get a projects ",
+            tags= { "projects", "get" })
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description= "Listado de projects",
+                    content= { @Content(schema = @Schema(implementation = ProjectGitLab.class), mediaType= "application/json") })
+            ,@ApiResponse(responseCode = "404", description="Project no encontrado",
+            content= { @Content(schema = @Schema()) })})
 
     // GET http://localhost:8081/gitlab/{id}[?since=5&updatedAfter=30&maxPages=3]
     @GetMapping("/{id}")
     public ProjectGitLab getProject(@PathVariable String id,
                                     @RequestParam(required = false, name= "sinceCommits") Integer sinceCommits,
                                     @RequestParam(required = false, name= "sinceIssues") Integer sinceIssues,
-                                    @RequestParam(required = false, name= "max_pages") Integer maxPages) {
-        //TODO: cuando esté hecho probar a comprobar si no son nulos aquñi en vez de en los métodos de service
+                                    @RequestParam(required = false, name= "maxPages") Integer maxPages) {
         Project project = projectService.findProject(id);
         String projectId = project.getId().toString();
         String projectName = project.getName();
@@ -88,13 +102,23 @@ public class ProjectController {
         return new CommentGitLab(id, body, author, created_at, updated_at);
     }
 
+    @Operation(summary= "Create project",
+            description= "Create a projects ",
+            tags= { "projects", "post" })
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description= "Listado de projects",
+                    content= { @Content(schema = @Schema(implementation = ProjectGitLab.class), mediaType= "application/json") })
+            ,@ApiResponse(responseCode = "400", description="Project no encontrado",
+            content= { @Content(schema = @Schema()) })})
+
     //POST http://localhost:8081/gitlab/{id}[?sinceCommits=5&sinceIssues=30&maxPages=2]
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public ProjectGitLab SendProject(@PathVariable String id,
                                      @RequestParam(required = false, name="sinceCommits") Integer sinceCommits,
                                      @RequestParam(required = false, name="sinceIssues") Integer sinceIssues,
-                                     @RequestParam(required = false, name="max_pages") Integer maxPages){
+                                     @RequestParam(required = false, name="maxPages") Integer maxPages){
 
         Project project = projectService.findProject(id);
         String projectId = project.getId().toString();

@@ -18,7 +18,7 @@ public class Commit {
     @JsonProperty("created_at")
     private String createdAt;
     @JsonProperty("parent_ids")
-    private List<Object> parentIds;
+    private List<String> parentIds;
     @JsonProperty("title")
     private String title;
     @JsonProperty("message")
@@ -86,12 +86,12 @@ public class Commit {
     }
 
     @JsonProperty("parent_ids")
-    public List<Object> getParentIds() {
+    public List<String> getParentIds() {
         return parentIds;
     }
 
     @JsonProperty("parent_ids")
-    public void setParentIds(List<Object> parentIds) {
+    public void setParentIds(List<String> parentIds) {
         this.parentIds = parentIds;
     }
 
